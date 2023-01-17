@@ -3,7 +3,8 @@ extends KinematicBody2D
 
 var velocity: = Vector2.ZERO
 export var speed: = 100
-
+const acceleration: = 500
+const friction: =  500
 
 # Called when the node enters the scene tree for the first time.
 func _physics_process(delta):
@@ -13,8 +14,9 @@ func _physics_process(delta):
 	input_vector = input_vector.normalized()
  
 	if input_vector != Vector2.ZERO:
-		velocity = input_vector
+		velocity += input_vector * acceleration * delta
+		velocity = velocity.clamped(speed * delta)
 	else:
-		velocity = Vector2.ZERO
+		velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
 		
-	move_and_slide(velocity * delta * speed)
+	move_and_slide(velocity)
