@@ -5,11 +5,6 @@
 
 [node name="world" type="YSort"]
 
-[node name="StaticBody2D" type="StaticBody2D" parent="."]
-
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StaticBody2D"]
-polygon = PoolVector2Array( 0, 0, 72, 0, 64, 40, 64, 72, 96, 104, 152, 96, 232, 72, 256, 88, 264, 24, 248, 0, 320, 0, 320, 72, 320, 112, 0, 112 )
-
 [node name="Player" parent="." instance=ExtResource( 2 )]
 position = Vector2( 112, 48 )
 
