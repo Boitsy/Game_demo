@@ -26,4 +26,4 @@ func _physics_process(delta):
 		
 	#The character stops completely if it hits a wall it can't slide across.
 	velocity = move_and_slide(velocity)
-	print(velocity)
+	
