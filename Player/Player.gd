@@ -44,7 +44,7 @@ func move_state(delta):
 	input_vector = input_vector.normalized()
  
 	if input_vector != Vector2.ZERO:
-		#The parameters used in the "set" function can be found by hovering over "Run" and "Idle" respectively.
+		#The parameters used in the "set" function can be found by hovering over "Run", "Attack" and "Idle" respectively.
 		#These functions set the animation blend positions to our input_vector.
 		animation_tree.set("parameters/Idle/blend_position", input_vector)
 		animation_tree.set("parameters/Run/blend_position", input_vector)
@@ -64,13 +64,20 @@ func move_state(delta):
 		
 	#The character stops completely if it hits a wall it can't slide across.
 	velocity = move_and_slide(velocity)
+	
+	
 	if Input.is_action_just_pressed("attack"):
+		#Sets the state to "Attack" if the attack button is pressed (Mouse1).
 		state = Attack
 	
 	
 func attack_state(delta):
+	
+	#Sets the velocity to zero and play the "Attack" animation.
 	velocity = Vector2.ZERO
 	animation_state.travel("Attack")
 
 func attack_state_finished():
+	#Sets the state back to move so the animations for it can play accordingly.
+	#This function is called when the animation ends you can see this at the AnimationPlayer
 	state = Move
