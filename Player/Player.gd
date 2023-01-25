@@ -1,10 +1,11 @@
 extends KinematicBody2D
 
-
+var roll_velocity: = Vector2.DOWN
 var velocity: = Vector2.ZERO
 export var maxspeed: = 80
 const acceleration: = 500
 const friction: =  500
+export var rollspeed: = 120
 
 enum{
 	Move,
@@ -24,15 +25,16 @@ func _ready():
 	animation_tree.active = true
 
 func _physics_process(delta):
+	
 	match state:
 		Move:
 			move_state(delta)
 		
 		Roll:
-			pass
+			roll_state(delta)
 		
 		Attack:
-			attack_state(delta)
+			attack_state()
 	
 
 func move_state(delta):
@@ -44,11 +46,13 @@ func move_state(delta):
 	input_vector = input_vector.normalized()
  
 	if input_vector != Vector2.ZERO:
-		#The parameters used in the "set" function can be found by hovering over "Run", "Attack" and "Idle" respectively.
+		roll_velocity = input_vector
+		#The parameters used in the "set" function can be found by hovering over "Run", "Roll", "Attack" and "Idle" respectively.
 		#These functions set the animation blend positions to our input_vector.
 		animation_tree.set("parameters/Idle/blend_position", input_vector)
 		animation_tree.set("parameters/Run/blend_position", input_vector)
 		animation_tree.set("parameters/Attack/blend_position", input_vector)
+		animation_tree.set("parameters/Roll/blend_position", input_vector)
 		
 		#Use the "Run" animations.
 		animation_state.travel("Run")
@@ -63,21 +67,37 @@ func move_state(delta):
 		velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
 		
 	#The character stops completely if it hits a wall it can't slide across.
-	velocity = move_and_slide(velocity)
+	move()
 	
 	
 	if Input.is_action_just_pressed("attack"):
 		#Sets the state to "Attack" if the attack button is pressed (Mouse1).
 		state = Attack
 	
-	
-func attack_state(delta):
-	
-	#Sets the velocity to zero and play the "Attack" animation.
+	if Input.is_action_just_pressed("roll"):
+		#Sets the state to "Attack" if the attack button is pressed (Left-Shift).
+		state = Roll
+		
+		
+func attack_state():
+	#Sets the velocity to zero and plays the "Attack" animation.
 	velocity = Vector2.ZERO
 	animation_state.travel("Attack")
+	
+func roll_state(delta):
+	velocity = roll_velocity * rollspeed
+	animation_state.travel("Roll")
+	move()
 
 func attack_state_finished():
 	#Sets the state back to move so the animations for it can play accordingly.
 	#This function is called when the animation ends you can see this at the AnimationPlayer
 	state = Move
+
+func roll_state_finished():
+	state = Move
+	velocity = Vector2.ZERO
+	
+
+func move():
+	velocity = move_and_slide(velocity)
