@@ -7,6 +7,7 @@ const acceleration: = 500
 const friction: =  500
 export var rollspeed: = 120
 
+
 enum{
 	Move,
 	Roll,
@@ -19,10 +20,14 @@ onready var animation_player = $AnimationPlayer
 onready var animation_tree = $AnimationTree
 #The parameters/playback can be found by hovering over playback on AnimationTree
 onready var animation_state = animation_tree.get("parameters/playback")
+onready var sword_hitbox = $HitboxPivot/SwordHitbox
 
 func _ready():
 	#When the game is ready activate AnimationTree.
 	animation_tree.active = true
+	sword_hitbox.knockback_vector = rollspeed
+	
+	
 
 func _physics_process(delta):
 	
@@ -31,7 +36,7 @@ func _physics_process(delta):
 			move_state(delta)
 		
 		Roll:
-			roll_state(delta)
+			roll_state()
 		
 		Attack:
 			attack_state()
@@ -47,6 +52,7 @@ func move_state(delta):
  
 	if input_vector != Vector2.ZERO:
 		roll_velocity = input_vector
+		sword_hitbox.knockback_vector = input_vector
 		#The parameters used in the "set" function can be found by hovering over "Run", "Roll", "Attack" and "Idle" respectively.
 		#These functions set the animation blend positions to our input_vector.
 		animation_tree.set("parameters/Idle/blend_position", input_vector)
@@ -84,10 +90,11 @@ func attack_state():
 	velocity = Vector2.ZERO
 	animation_state.travel("Attack")
 	
-func roll_state(delta):
+func roll_state():
 	velocity = roll_velocity * rollspeed
 	animation_state.travel("Roll")
 	move()
+	
 
 func attack_state_finished():
 	#Sets the state back to move so the animations for it can play accordingly.
